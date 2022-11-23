@@ -50,7 +50,7 @@ def build_relevant_ds(data: list):
         
     
     print("Preprocessing started...")
-    tracks_per_user, users_per_track, artists_per_user  = defaultdict(list), defaultdict(list), defaultdict(list)
+    tracks_per_user, users_per_track, users_per_artist  = defaultdict(list), defaultdict(list), defaultdict(list)
     
     # Traversing through data and preprocessing
     for playlist in data:       
@@ -62,7 +62,7 @@ def build_relevant_ds(data: list):
             # Appending data to data structures
             tracks_per_user[user].append(track)
             users_per_track[track].append(user)
-            artists_per_user[artist].append(user)
+            users_per_artist[artist].append(user)
             
     return tracks_per_user, users_per_track, users_per_artist
             
