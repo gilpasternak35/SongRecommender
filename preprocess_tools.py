@@ -16,6 +16,9 @@ def dataloader_pipeline(file_list: list) -> list:
     """
     # Resulting data (hopefully to be stored in list)
     data = []
+    
+    # Regular expression for desired filenames
+    desired_filename = re.compile("mpd.*")
 
     # Traversing through available datafiles
     print("Starting Dataloading...")
@@ -33,7 +36,7 @@ def dataloader_pipeline(file_list: list) -> list:
     return data
 
     
-def build_relevant_ds(data: list) -> (list, dict, dict, dict):
+def build_relevant_ds(data: list):
     """
     Preprocesses data, simultaneously building relevant data structures
     
