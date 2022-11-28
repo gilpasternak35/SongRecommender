@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[2]:
+# In[1]:
 
 
 import pandas as pd
@@ -11,9 +11,10 @@ import re
 from tqdm import tqdm
 import numpy as np
 import copy
+from collections import defaultdict
 
 
-# In[3]:
+# In[2]:
 
 
 def dataloader_pipeline(file_list: list, desired_filename) -> list:
@@ -41,6 +42,38 @@ def dataloader_pipeline(file_list: list, desired_filename) -> list:
    
     return data
 
+def build_relevant_ds(songs: list):
+    """
+    Preprocesses data, simultaneously building relevant data structures
+    
+    @param data - a data list of playlist dictionaries to preprocess
+    @returns a list of tracks per user, users per track, watered down data list
+    """
+    
+    def process_uri(uri:str):
+        """URI Processing method"""
+        return uri.split(":")[2]
+        
+    print("Preprocessing started...")
+    tracks_per_user, users_per_track, users_per_artist, artists_per_user = defaultdict(list), defaultdict(list), defaultdict(list), defaultdict(list)
+    
+    # Traversing through data and preprocessing
+    for song in songs:
+
+        # Obtaining user
+        user = song['user']
+
+        # obtaining necessary data
+        track, artist, album = song['track_name'], song['artist_name'], song['album_name']
+
+        # Appending data to data structures
+        tracks_per_user[user].append(track)
+        users_per_track[track].append(user)
+        users_per_artist[artist].append(user)
+        artists_per_user[user].append(artist)
+
+    return tracks_per_user, users_per_track, users_per_artist, artists_per_user
+
 def enrich_song(song: dict, playlist: dict):
     """Playlist enrichment procedure"""
     song['playlist_name'] = playlist['name']
@@ -51,7 +84,7 @@ def enrich_song(song: dict, playlist: dict):
     return song
 
 
-# In[4]:
+# In[3]:
 
 
 # Listing directory
@@ -64,7 +97,7 @@ desired_filename = re.compile("mpd.*")
 data = dataloader_pipeline(files, desired_filename)
 
 
-# In[5]:
+# In[4]:
 
 
 # Constructing a song centric dataset
@@ -81,7 +114,7 @@ with open('full_song_data.json', 'w') as file_writer:
     json.dump(new_data, file_writer)
 
 
-# In[8]:
+# In[5]:
 
 
 # Splitting up to train and test, writing train and test to their own files
@@ -97,33 +130,7 @@ train = my_data[:800_000]
 test_positives = my_data[800_000:1_000_000]
 
 
-# In[9]:
-
-
-# Constructing negative instances
-print("Constructing negative instances...")
-test_negatives = []
-
-# Sampling negatives
-for ex in test_positives:
-    user = ex['user']
-    random_song = ex
-    
-    # Sampling random songs until one found from different playlist
-    while random_song['user'] == user:
-        random_song = my_data[np.random.randint(0, len(my_data))]
-    
-    # Negative example modification
-    neg_ex = copy.deepcopy(random_song)
-    neg_ex['listened'] = False
-    
-    # Appending
-    test_negatives.append(neg_ex)
-
-test_positives += test_negatives
-
-
-# In[10]:
+# In[6]:
 
 
 # Writing song centric dataset to file
@@ -132,13 +139,13 @@ with open('data_train.json', 'w') as file_writer:
     json.dump(train, file_writer)
 
 
-# In[ ]:
+# In[7]:
 
 
+print(f"Test Set Size: {len(test_positives)}")
 
 
-
-# In[11]:
+# In[8]:
 
 
 # Writing song centric dataset to file
