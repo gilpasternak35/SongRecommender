@@ -63,3 +63,13 @@ button, body, head {
     text-align:center;
     color: #0b8600;
 }
+
+.yt-icon {
+    display:inline-block;
+    height: 35px;
+    width: 35px;
+    background: url('../img/youtube.png') no-repeat center;
+    background-size: contain;
+    margin-left:15px;
+    vertical-align:middle;
+}

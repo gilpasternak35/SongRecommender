@@ -140,8 +140,23 @@ class UI {
             },
         }).then((result) => {
             if (result.isConfirmed && !result.value.error) {
-                console.log(result.value.data)
+                UI.showResultingSongs(result.value.data);
             }
+        });
+    }
+
+    static showResultingSongs(songs) {
+        let modalHtml = ""
+        console.log(songs)
+        for (let i in songs) {
+            modalHtml += `<b>${songs[i]["name"]}</b> by ${songs[i]["artist"]}<a href="https://www.youtube.com/results?search_query=${songs[i]["name"]}+by+${songs[i]["artist"]}"><div class="yt-icon"></div></a><br/>`
+        }
+        Swal.fire({
+            title: 'Recommended Songs',
+            html: modalHtml,
+            showConfirmButton: false,
+            width: "50%",
+            footer: '<a href="#" onclick="UI.onLogoPress()">Get More Songs</a>'
         });
     }
 
