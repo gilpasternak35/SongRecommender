@@ -102,16 +102,27 @@ class UI {
             confirmButtonColor: "#13ab4c",
             footer: `<a href="https://www.spotify.com/us/account/overview/?utm_source=spotify&utm_medium=menu&utm_campaign=your_account">What's my Spotify Username?</a>`,
             preConfirm: async (username) => {
-                return await Spotify.getPlaylistsByUser(username);
+                if (!username) return {error: "NO USERNAME"};
+                UI.currentUsername = username;
+                return await Server.getUserPlaylists(username);
             },
         }).then((result) => {
-            if (result.isConfirmed) {
+            if (result.isConfirmed && !result.value.error) {
                 return UI.chooseTrackDialog(result.value);
             }
         })
     }
 
     static chooseTrackDialog(playlists) {
+        if (!playlists || playlists.length <= 0) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Username Error',
+                text: 'That Spotify user has no playlists or does not exist.',
+                footer: '<a href="#" onclick="UI.onLogoPress()">Try again</a>'
+            });
+            return;
+        }
         Swal.fire({
             title: 'Choose your playlist',
             input: 'select',
@@ -119,7 +130,11 @@ class UI {
             inputPlaceholder: 'Select a playlist',
             confirmButtonText: 'Find Songs',
             confirmButtonColor: "#13ab4c",
-        })
+            preConfirm: async (index) => {
+                if (!index) return {error: "NO PLAYLIST"};
+                return await Server.getSongsFromPlaylist(UI.currentUsername, playlists[index]);
+            },
+        });
     }
 
     static prepLandingPage() {

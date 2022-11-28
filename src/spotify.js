@@ -4,7 +4,7 @@ class Spotify {
         return await $.ajax({
             url: `https://api.spotify.com/v1/users/${user}/playlists?limit=40`,
             headers: {
-                Authorization: "Bearer7CyWp " + authToken
+                Authorization: "Bearer " + authToken
             },
             accepts: "application/json",
             type: "GET",
