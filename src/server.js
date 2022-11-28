@@ -1,9 +1,13 @@
 class Server {
+
+    static URL = "https://acohenar.pythonanywhere.com"
+
     static async getUserPlaylists(username) {
         return await $.ajax({
-            url:"http://127.0.0.1:5000/getplaylists",
+            url: Server.URL + "/getplaylists",
             type:"GET",
             dataType: 'json',
+            data: {"username": username},
             headers: {'Access-Control-Allow-Origin': '*'},
 
             success: function(response){
@@ -17,9 +21,10 @@ class Server {
 
     static async getSongsFromPlaylist(username, playlist) {
         return await $.ajax({
-            url:"http://127.0.0.1:5000/getsongs",
+            url: Server.URL + "/getsongs",
             type:"GET",
             dataType: 'json',
+            data: {"username": username, "playlist": playlist},
             headers: {'Access-Control-Allow-Origin': '*'},
 
             success: function(response){

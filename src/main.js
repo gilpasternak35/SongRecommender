@@ -19,7 +19,7 @@ class UI {
         wave.style.setProperty("--size", size + "px");
         wave.style.setProperty("--p", (size / 2) + "px");
         wave.style.setProperty("--R", Math.sqrt(Math.pow(size, 2) + Math.pow(size / 2, 2)) + "px");
-        let height = 10 + size / 4;
+        let height = 11 + size / 4;
         box.css("height", height + "vh");
         box.css("top", 50 - height / 2 + "vh");
     }
@@ -100,7 +100,7 @@ class UI {
             },
             confirmButtonText: 'Next',
             confirmButtonColor: "#13ab4c",
-            footer: `<a href="https://www.spotify.com/us/account/overview/?utm_source=spotify&utm_medium=menu&utm_campaign=your_account">What's my Spotify Username?</a>`,
+            footer: `<a href="#" onclick="UI.whatsMyUsername()">What's my Spotify Username?</a>`,
             preConfirm: async (username) => {
                 if (!username) return {error: "NO USERNAME"};
                 UI.currentUsername = username;
@@ -108,9 +108,13 @@ class UI {
             },
         }).then((result) => {
             if (result.isConfirmed && !result.value.error) {
-                return UI.chooseTrackDialog(result.value);
+                return UI.chooseTrackDialog(result.value.data);
             }
-        })
+        });
+    }
+
+    static whatsMyUsername() {
+        window.open("https://www.spotify.com/us/account/overview/?utm_source=spotify&utm_medium=menu&utm_campaign=your_account", '_blank');
     }
 
     static chooseTrackDialog(playlists) {
@@ -134,6 +138,10 @@ class UI {
                 if (!index) return {error: "NO PLAYLIST"};
                 return await Server.getSongsFromPlaylist(UI.currentUsername, playlists[index]);
             },
+        }).then((result) => {
+            if (result.isConfirmed && !result.value.error) {
+                console.log(result.value.data)
+            }
         });
     }
 
