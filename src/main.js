@@ -100,7 +100,7 @@ class UI {
             },
             confirmButtonText: 'Next',
             confirmButtonColor: "#13ab4c",
-            footer: `<a href="#" onclick="UI.whatsMyUsername()">What's my Spotify Username?</a>`,
+            footer: `<a href="#" onclick="UI.redirect('https://www.spotify.com/us/account/overview/?utm_source=spotify&utm_medium=menu&utm_campaign=your_account')">What's my Spotify Username?</a>`,
             preConfirm: async (username) => {
                 if (!username) return {error: "NO USERNAME"};
                 UI.currentUsername = username;
@@ -111,10 +111,6 @@ class UI {
                 return UI.chooseTrackDialog(result.value.data);
             }
         });
-    }
-
-    static whatsMyUsername() {
-        window.open("https://www.spotify.com/us/account/overview/?utm_source=spotify&utm_medium=menu&utm_campaign=your_account", '_blank');
     }
 
     static chooseTrackDialog(playlists) {
@@ -149,15 +145,21 @@ class UI {
         let modalHtml = ""
         console.log(songs)
         for (let i in songs) {
-            modalHtml += `<b>${songs[i]["name"]}</b> by ${songs[i]["artist"]}<a href="https://www.youtube.com/results?search_query=${songs[i]["name"]}+by+${songs[i]["artist"]}"><div class="yt-icon"></div></a><br/>`
+            modalHtml += `<b>${songs[i]["name"]}</b> by ${songs[i]["artist"]}<a href="#"><div class="yt-icon" onclick="UI.redirect('https://www.youtube.com/results?search_query=${songs[i]["name"]}+by+${songs[i]["artist"]}')"></div></a><br/>`
         }
         Swal.fire({
             title: 'Recommended Songs',
             html: modalHtml,
             showConfirmButton: false,
             width: "50%",
+            showCloseButton: true,
+            allowOutsideClick: false,
             footer: '<a href="#" onclick="UI.onLogoPress()">Get More Songs</a>'
         });
+    }
+
+    static redirect(site) {
+        window.open(site, '_blank');
     }
 
     static prepLandingPage() {
