@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[14]:
+# In[2]:
 
 
 import pandas as pd
@@ -13,7 +13,7 @@ import numpy as np
 import copy
 
 
-# In[2]:
+# In[3]:
 
 
 def dataloader_pipeline(file_list: list, desired_filename) -> list:
@@ -51,7 +51,7 @@ def enrich_song(song: dict, playlist: dict):
     return song
 
 
-# In[3]:
+# In[4]:
 
 
 # Listing directory
@@ -64,7 +64,7 @@ desired_filename = re.compile("mpd.*")
 data = dataloader_pipeline(files, desired_filename)
 
 
-# In[4]:
+# In[5]:
 
 
 # Constructing a song centric dataset
@@ -72,7 +72,7 @@ print("Building Song Dataset...")
 new_data = {"data": [enrich_song(song, playlist) for playlist in data for song in playlist['tracks']]}
 
 
-# In[5]:
+# In[7]:
 
 
 # Writing song centric dataset to file
@@ -81,7 +81,7 @@ with open('full_song_data.json', 'w') as file_writer:
     json.dump(new_data, file_writer)
 
 
-# In[24]:
+# In[8]:
 
 
 # Splitting up to train and test, writing train and test to their own files
@@ -91,13 +91,13 @@ np.random.shuffle(my_data)
 
 # Splitting train and test by threshold
 split_threshold = int(len(my_data) * (0.75))
-train = my_data[:split_threshold]
+train = my_data[:800_000]
 
 # Attaining positive instances
-test_positives = my_data[split_threshold:]
+test_positives = my_data[800_000:1_000_000]
 
 
-# In[29]:
+# In[9]:
 
 
 # Constructing negative instances
@@ -123,7 +123,7 @@ for ex in test_positives:
 test_positives += test_negatives
 
 
-# In[ ]:
+# In[10]:
 
 
 # Writing song centric dataset to file
@@ -135,8 +135,26 @@ with open('data_train.json', 'w') as file_writer:
 # In[ ]:
 
 
+
+
+
+# In[11]:
+
+
 # Writing song centric dataset to file
 print("Writing test data to file...")
 with open('data_test.json', 'w') as file_writer:
     json.dump(test_positives, file_writer)
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
 
