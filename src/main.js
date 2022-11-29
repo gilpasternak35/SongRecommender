@@ -93,6 +93,7 @@ class UI {
 
     static onLogoPress() {
         if (UI.currentInter) return;
+        if (Server.authTokenValid()) return UI.prepChooseTrack();
         Server.getAuthToken();
         UI.currentInter = setInterval(async function() {
             if (!Server.authToken) return;
@@ -121,7 +122,7 @@ class UI {
                 icon: 'error',
                 title: 'Username Error',
                 text: 'That Spotify user has no playlists or does not exist.',
-                footer: '<a href="#" onclick="UI.onLogoPress()">Try again</a>'
+                footer: '<a href="#" onclick="UI.prepChooseTrack()">Try again</a>'
             });
             return;
         }

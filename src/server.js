@@ -3,7 +3,7 @@ class Server {
     static URL = "https://acohenar.pythonanywhere.com"
 
     static getAuthToken() {
-        if (Server.authToken && new Date().getTime() / 1000 < Server.authExpiry) {
+        if (Server.authTokenValid()) {
             return Server.authToken;
         }
         var SPOTIPY_CLIENT_ID = "a33300f31485436eb86addeadd1eb614"
@@ -32,5 +32,9 @@ class Server {
                 }
             });
         });
+    }
+
+    static authTokenValid() {
+        return Server.authToken && new Date().getTime() / 1000 < Server.authExpiry;
     }
 }
