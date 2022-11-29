@@ -1,5 +1,5 @@
-import numpy as np
 import pandas as pd
+import numpy as np
 from collections import defaultdict
 
 def generate_predictions(some_tracks: list, data_train: pd.DataFrame):
@@ -8,7 +8,7 @@ def generate_predictions(some_tracks: list, data_train: pd.DataFrame):
   predictions = []
 
   # Encriching data, building data structures
-  tracks_per_user_g, users_per_track_g, users_per_artist_g, artists_per_user_g, artists_per_song = build_relevant_ds_generate(data_train[:120_000])
+  tracks_per_user_g, users_per_track_g, users_per_artist_g, artists_per_user_g, artists_per_song = build_relevant_ds_generate(data_train[:200_000])
 
   # For each track building recommendations by finding a similar user
   for track in some_tracks:
@@ -28,12 +28,17 @@ def generate_predictions(some_tracks: list, data_train: pd.DataFrame):
       closest_user_tracks = tracks_per_user_g[closest_user[1]]
 
       # Predicting novel songs
-      choice = predictions[0] if len(predictions) > 0 else ""
-      while choice in predictions:
-        choice = closest_user_tracks[np.random.randint(len(closest_user_tracks))]
+      choice = predictions[0][0] if len(predictions) > 0 else ""
+      s_artist = predictions[0][0] if len(predictions) > 0 else ""
+      iter = 0
 
-      s_artist = artists_per_song[choice] if choice in artists_per_song else [""]
-      predictions.append((choice, s_artist[0]))
+      while (choice, s_artist) in predictions and iter < 5:
+        iter += 1
+        choice = closest_user_tracks[np.random.randint(len(closest_user_tracks))]
+        s_artist = artists_per_song[choice][0] if choice in artists_per_song else [""]
+      
+      if(iter < 5):
+        predictions.append((choice, s_artist))
 
   return predictions[1:11]
 
@@ -70,3 +75,4 @@ def build_relevant_ds_generate(songs: list):
       artists_per_song[track].append(artist)
             
     return tracks_per_user, users_per_track, users_per_artist, artists_per_user, artists_per_song
+            
