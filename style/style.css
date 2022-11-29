@@ -72,4 +72,16 @@ button, body, head {
     background-size: contain;
     margin-left:15px;
     vertical-align:middle;
+    cursor: pointer;
+}
+
+.sp-icon {
+    display:inline-block;
+    height: 30px;
+    width: 30px;
+    background: url('../img/spotify.png') no-repeat center;
+    background-size: contain;
+    margin-left:7.5px;
+    vertical-align:middle;
+    cursor: pointer;
 }

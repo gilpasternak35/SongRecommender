@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+    <head></head>
+    <body>
+        <script>
+            (function(){
+                let x = window.location.href;
+                let a = x.indexOf("access_token") + 13
+                x = x.substring(a)
+                a = x.indexOf("&")
+                let spotifyAccessToken = x.substring(0, a);
+                window.opener.postMessage(spotifyAccessToken, '*');
+                window.close();
+            })();
+        </script>
+    </body>
+</html>
