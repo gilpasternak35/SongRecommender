@@ -144,7 +144,7 @@ class UI {
                         "name": track["name"]
                     });
                 }
-                return UI.showResultingSongs(await Spotify.getRecommendations(tracks));
+                return UI.showResultingSongs((await Spotify.getRecommendations(tracks))["data"]);
             },
         });
     }

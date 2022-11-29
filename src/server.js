@@ -1,7 +1,6 @@
 class Server {
 
-    //static URL = "https://acohenar.pythonanywhere.com"
-    static URL = "http://localhost:5000"
+    static URL = "https://acohenar.pythonanywhere.com"
 
     static getAuthToken() {
         if (Server.authToken && new Date().getTime() / 1000 < Server.authExpiry) {
