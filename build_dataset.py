@@ -40,7 +40,7 @@ def dataloader_pipeline(file_list: list, desired_filename) -> list:
     
     print("Finished Dataloading...")
    
-    return data
+    return data[:200000]
 
 def build_relevant_ds(songs: list):
     """
@@ -124,7 +124,7 @@ np.random.shuffle(my_data)
 
 # Splitting train and test by threshold
 split_threshold = int(len(my_data) * (0.75))
-train = my_data[:800_000]
+train = my_data[:200_000]
 
 # Attaining positive instances
 test_positives = my_data[800_000:1_000_000]

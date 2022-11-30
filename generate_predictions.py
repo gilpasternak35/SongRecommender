@@ -2,6 +2,12 @@ import pandas as pd
 import numpy as np
 from collections import defaultdict
 
+def jaccard(set1: set, set2: set):
+  """Jaccard similarity metric"""
+  inter = len(set1.intersection(set2))
+  union = len(set1.union(set2))
+  return inter / union if union !=0 else 0
+
 def generate_predictions(some_tracks: list, data_train: pd.DataFrame):
   """Generates predictions using hybrid user artist model"""
   # Prediction array
@@ -18,7 +24,7 @@ def generate_predictions(some_tracks: list, data_train: pd.DataFrame):
 
     # finding most similar user who has also listened to artist
     for ext_user in users_per_artist_g[artist]:
-      sims.append((jaccard(songs, set(tracks_per_user_g[user])), ext_user))
+      sims.append((jaccard(songs, set(tracks_per_user_g[ext_user])), ext_user))
 
     # If have found similar user
     if len(sims) != 0:
@@ -39,7 +45,7 @@ def generate_predictions(some_tracks: list, data_train: pd.DataFrame):
       
       if(iter < 5):
         predictions.append((choice, s_artist))
-
+  print("PREDICTIONS******")
   return predictions[1:11]
 
 
@@ -75,4 +81,3 @@ def build_relevant_ds_generate(songs: list):
       artists_per_song[track].append(artist)
             
     return tracks_per_user, users_per_track, users_per_artist, artists_per_user, artists_per_song
-            
