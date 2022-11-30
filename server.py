@@ -7,9 +7,9 @@ from generate_predictions import generate_predictions
 app = Flask(__name__)
 CORS(app)
 
-@app.route("/getrecommendations")
+@app.route("/getrecommendations", methods=["POST"])
 def getrecommendations():
-    songs = json.loads(request.args.get("songs"))
+    songs = json.loads(request.values["songs"])
     f = open('data_train.json')
     data = json.load(f)
     pred = generate_predictions(songs, data)
