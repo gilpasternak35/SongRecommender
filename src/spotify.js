@@ -51,11 +51,12 @@ class Spotify {
     }
 
     static async getRecommendations(songs) {
+        console.log(songs)
         return await $.ajax({
             url: Server.URL + "/getrecommendations",
-            type: "POST",
+            type: "GET",
             dataType: 'json',
-            data: {"songs": songs},
+            data: {"songs": JSON.stringify(songs)},
             headers: {'Access-Control-Allow-Origin': '*'},
 
             success: function(response){
