@@ -1,5 +1,3 @@
-// Max px of curve: 224, min: 118px
-
 $ = $ || {} // Void jQuery warnings
 
 class UI {
@@ -140,9 +138,8 @@ class UI {
                 for (let t in trackData["items"]) {
                     let track = trackData["items"][t]["track"];
                     tracks.push({
-                        "album": track["album"]["name"],
-                        "artists": track["artists"],
-                        "name": track["name"]
+                        "artist_name": track["artists"][0]["name"],
+                        "track_name": track["name"]
                     });
                 }
                 return UI.showResultingSongs((await Spotify.getRecommendations(tracks))["data"]);

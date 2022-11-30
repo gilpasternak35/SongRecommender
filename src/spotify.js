@@ -55,7 +55,7 @@ class Spotify {
             url: Server.URL + "/getrecommendations",
             type: "POST",
             dataType: 'json',
-            data: {"songs": songs},
+            data: {"songs": JSON.stringify(songs)},
             headers: {'Access-Control-Allow-Origin': '*'},
 
             success: function(response){
