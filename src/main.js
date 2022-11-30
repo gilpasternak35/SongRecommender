@@ -19,7 +19,7 @@ class UI {
         wave.style.setProperty("--size", size + "px");
         wave.style.setProperty("--p", (size / 2) + "px");
         wave.style.setProperty("--R", Math.sqrt(Math.pow(size, 2) + Math.pow(size / 2, 2)) + "px");
-        let height = 10 + size / 4;
+        let height = 11 + size / 4;
         box.css("height", height + "vh");
         box.css("top", 50 - height / 2 + "vh");
     }
@@ -92,34 +92,37 @@ class UI {
     }
 
     static onLogoPress() {
-        Swal.fire({
-            title: 'Enter your Spotify Username',
-            input: 'text',
-            inputAttributes: {
-                autocapitalize: 'off'
-            },
-            confirmButtonText: 'Next',
-            confirmButtonColor: "#13ab4c",
-            footer: `<a href="https://www.spotify.com/us/account/overview/?utm_source=spotify&utm_medium=menu&utm_campaign=your_account">What's my Spotify Username?</a>`,
-            preConfirm: async (username) => {
-                if (!username) return {error: "NO USERNAME"};
-                UI.currentUsername = username;
-                return await Server.getUserPlaylists(username);
-            },
-        }).then((result) => {
-            if (result.isConfirmed && !result.value.error) {
-                return UI.chooseTrackDialog(result.value);
-            }
-        })
+        if (UI.currentInter) return;
+        if (Server.authTokenValid()) return UI.prepChooseTrack();
+        Server.getAuthToken();
+        UI.currentInter = setInterval(async function() {
+            if (!Server.authToken) return;
+            clearInterval(UI.currentInter);
+            return await UI.prepChooseTrack();
+        }, 1000);
     }
 
-    static chooseTrackDialog(playlists) {
+    static async prepChooseTrack() {
+        UI.currentInter = null;
+        let data = await Spotify.getPlaylistsByUser();
+        let playlists = [];
+        let ids = [];
+        for (let i = 0; i < data["items"].length; i++) {
+            if (data["items"][i]["owner"]["display_name"] == Server.currentUserProfile["display_name"]) {
+                playlists.push(data["items"][i]["name"]);
+                ids.push(data["items"][i]["id"]);
+            }
+        }
+        UI.chooseTrackDialog(playlists, ids);
+    }
+
+    static chooseTrackDialog(playlists, ids) {
         if (!playlists || playlists.length <= 0) {
             Swal.fire({
                 icon: 'error',
                 title: 'Username Error',
                 text: 'That Spotify user has no playlists or does not exist.',
-                footer: '<a href="#" onclick="UI.onLogoPress()">Try again</a>'
+                footer: '<a href="#" onclick="UI.prepChooseTrack()">Try again</a>'
             });
             return;
         }
@@ -132,9 +135,40 @@ class UI {
             confirmButtonColor: "#13ab4c",
             preConfirm: async (index) => {
                 if (!index) return {error: "NO PLAYLIST"};
-                return await Server.getSongsFromPlaylist(UI.currentUsername, playlists[index]);
+                let trackData = await Spotify.getTracksInPlaylist(ids[index]);
+                let tracks = [];
+                for (let t in trackData["items"]) {
+                    let track = trackData["items"][t]["track"];
+                    tracks.push({
+                        "album": track["album"]["name"],
+                        "artists": track["artists"],
+                        "name": track["name"]
+                    });
+                }
+                return UI.showResultingSongs((await Spotify.getRecommendations(tracks))["data"]);
             },
         });
+    }
+
+    static showResultingSongs(songs) {
+        let modalHtml = "";
+        for (let i in songs) {
+            modalHtml += `<b>${songs[i]["name"]}</b> by ${songs[i]["artist"]}<a href="#"><div class="yt-icon" onclick="UI.redirect('https://www.youtube.com/results?search_query=${songs[i]["name"]}+by+${songs[i]["artist"]}')"></div></a>
+            <div class="sp-icon" onclick="Spotify.sendToSpotify('${songs[i]["name"]}', '${songs[i]["artist"]}')"></div></a><br/>`
+        }
+        Swal.fire({
+            title: 'Recommended Songs',
+            html: modalHtml,
+            showConfirmButton: false,
+            width: "50%",
+            showCloseButton: true,
+            allowOutsideClick: false,
+            footer: '<a href="#" onclick="UI.prepChooseTrack()">Get More Songs</a>'
+        });
+    }
+
+    static redirect(site) {
+        window.open(site, '_blank');
     }
 
     static prepLandingPage() {

@@ -1,29 +1,27 @@
-from flask import Flask
+from flask import Flask, render_template
+from flask import request
 from flask_cors import CORS
+
 app = Flask(__name__)
 CORS(app)
 
-@app.route("/getauth")
-def getauth():
-    # Return an auth code so spotify API works
-    return "ExampleAuth2rf3qv6n4w"
+@app.route("/getrecommendations", methods = ['POST'])
+def getrecommendations():
+    songs = request.args.get("songs")
+    return {"data": [{
+        "name": "Skyfall",
+        "artist": "Bravo"
+    }, {
+        "name": "Drama",
+        "artist": "AJR"
+    }, {
+        "name": "Believer",
+        "artist": "Imagine Dragons"
+    }, ]}
 
-@app.route("/getplaylists")
-def getplaylists():
-    # Return an array of songs
-    return []
-
-@app.route("/getsongs")
-def getsongs():
-    # Return an array of songs
-    return [{
-        "name": "exampleName",
-        "artist": "exampleArtist"
-    },
-    {
-        "name": "exampleName",
-        "artist": "exampleArtist"
-    }]
-
+@app.route("/callback")
+def callback():
+    return render_template('loginFin.html')
+    
 if __name__ == "__main__":
   app.run()
